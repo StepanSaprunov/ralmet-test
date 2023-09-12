@@ -1,8 +1,14 @@
 import { Module } from "@nestjs/common";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { UsersModule } from "./modules/users/users.module";
-import { User } from "./modules/users/users.model";
+import { User } from "./models/users.model";
 import { AuthModule } from './modules/auth/auth.module';
+import { Product } from "./models/product.model";
+import { Category } from "./models/category.model";
+import { File } from "./models/files.model";
+import { ProductField } from "./models/product_fields.model";
+import { ProductCategory } from "./models/product-category.model";
+import { Subcategory } from "./models/subcategory.model";
 
 @Module({
   controllers: [],
@@ -16,7 +22,15 @@ import { AuthModule } from './modules/auth/auth.module';
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
       autoLoadModels: true,
-      models: [User],
+      models: [
+        User,
+        Product,
+        Category,
+        File,
+        ProductField,
+        ProductCategory,
+        Subcategory
+      ],
     }),
     UsersModule,
     AuthModule,
