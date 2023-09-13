@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from "@nestjs/jwt";
-import { CreateUserDTO } from "src/modules/users/dto/create-user-dto";
+import { CreateUserDto } from "src/modules/users/dto/create-user-dto";
 import * as bcrypt from "bcryptjs";
 import { User } from "src/models/users.model";
 import { UsersService } from "../users/users.service";
@@ -13,12 +13,12 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async login(userDTO: CreateUserDTO) {
+  async login(userDTO: CreateUserDto) {
     const user = await this.validateUser(userDTO);
     return await this.generateToken(user);
   }
 
-  async registration(userDTO: CreateUserDTO) {
+  async registration(userDTO: CreateUserDto) {
     const candidate = await this.usersService.getUserByUsername(userDTO.username);
     if (candidate) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
@@ -38,7 +38,7 @@ export class AuthService {
     };
   }
 
-  private async validateUser(userDTO: CreateUserDTO) {
+  private async validateUser(userDTO: CreateUserDto) {
     const user = await this.usersService.getUserByUsername(userDTO.username);
     const isPasswordsEqual = await bcrypt.compare(userDTO.password, user.password);
     if (user && isPasswordsEqual) {
