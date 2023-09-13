@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { UsersModule } from "./modules/users/users.module";
 import { User } from "./models/users.model";
@@ -13,6 +13,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { ProductsModule } from "./modules/products/products.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import * as path from "path";
+import { LoggerMiddleware } from "./middleware/logger.middleware";
 
 @Module({
   controllers: [],
@@ -45,4 +46,10 @@ import * as path from "path";
     ProductsModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}
