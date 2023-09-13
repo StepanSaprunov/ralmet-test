@@ -15,7 +15,11 @@ export class AuthService {
 
   async login(userDTO: CreateUserDto) {
     const user = await this.validateUser(userDTO);
-    return await this.generateToken(user);
+    const { token } = await this.generateToken(user);
+    return {
+      user,
+      token
+    };
   }
 
   async registration(userDTO: CreateUserDto) {
@@ -25,7 +29,11 @@ export class AuthService {
     };
     const hashedPassword = await bcrypt.hash(userDTO.password, 7);
     const user = await this.usersService.createUser({ ...userDTO, password: hashedPassword });
-    return this.generateToken(user);
+    const { token } = await this.generateToken(user);
+    return {
+      user,
+      token
+    };
   }
 
   private async generateToken(user: User) {
