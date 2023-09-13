@@ -5,6 +5,8 @@ import { Category } from "src/models/category.model";
 import { Subcategory } from "src/models/subcategory.model";
 import { Sequelize } from "sequelize-typescript";
 import { InjectModel } from "@nestjs/sequelize";
+import { IQueryPagination } from "src/types/query";
+import { calcOffset } from "src/utils/calc-offset";
 
 @Injectable()
 export class CategoriesService {
@@ -45,8 +47,12 @@ export class CategoriesService {
     }
   }
 
-  async findAll() {
-    const categories = await Category.findAll({
+  async findAll(query: IQueryPagination) {
+    const { page, limit } = query;
+    const offset = calcOffset(+page, +limit) || undefined;
+    const categories = await Category.findAndCountAll({
+      offset,
+      limit: limit || undefined,
       include: {
         model: Category,
         attributes: ['id', 'name'],

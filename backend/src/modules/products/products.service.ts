@@ -8,6 +8,8 @@ import { ProductField } from "src/models/product_fields.model";
 import { Sequelize } from "sequelize-typescript";
 import { File } from "src/models/files.model";
 import { FilesService } from "../files/files.service";
+import { IQueryPagination } from "src/types/query";
+import { calcOffset } from "src/utils/calc-offset";
 
 @Injectable()
 export class ProductsService {
@@ -64,8 +66,12 @@ export class ProductsService {
     }
   }
 
-  async findAll() {
+  async findAll(query: IQueryPagination) {
+    const { page, limit } = query;
+    const offset = calcOffset(+page, +limit) || undefined;
     const products = await this.productModel.findAll({
+      offset,
+      limit,
       include: [
         {
           model: Category,
