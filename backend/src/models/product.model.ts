@@ -3,16 +3,12 @@ import { Category } from "./category.model";
 import { ProductCategory } from "./product-category.model";
 import { ProductField } from "./product_fields.model";
 import { File } from "./files.model";
-
-interface ProductCreationAttr {
-  name: string;
-  categories?: number[];
-}
+import { CreateProductDto } from "src/modules/products/dto/create-product.dto";
 
 @Table({
   tableName: "products",
 })
-export class Product extends Model<Product, ProductCreationAttr> {
+export class Product extends Model<Product, CreateProductDto> {
   @Column({
     type: DataType.INTEGER,
     unique: true,

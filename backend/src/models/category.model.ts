@@ -2,16 +2,12 @@ import { BelongsToMany, Column, DataType, HasMany, Model, Table } from "sequeliz
 import { Product } from "./product.model";
 import { ProductCategory } from "./product-category.model";
 import { Subcategory } from "./subcategory.model";
-
-interface CategoryCreationAttr {
-  name: string;
-  categories?: [number];
-}
+import { CreateCategoryDto } from "src/modules/categories/dto/create-category.dto";
 
 @Table({
   tableName: "categories",
 })
-export class Category extends Model<Category, CategoryCreationAttr> {
+export class Category extends Model<Category, CreateCategoryDto> {
   @Column({
     type: DataType.INTEGER,
     unique: true,

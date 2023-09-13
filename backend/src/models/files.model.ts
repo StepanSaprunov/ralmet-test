@@ -25,6 +25,12 @@ export class File extends Model<File, FileCreationAttr> {
   })
   name: string;
 
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  originalName: string;
+
   @ForeignKey(() => Product)
   @Column({
     type: DataType.INTEGER,

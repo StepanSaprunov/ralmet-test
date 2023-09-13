@@ -4,5 +4,6 @@ export class CreateProductDto {
   readonly fields?: {
     name: string;
     value: string;
-  }[]
+  }[];
+  readonly files?: string[];
 }

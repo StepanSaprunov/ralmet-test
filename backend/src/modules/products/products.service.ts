@@ -6,23 +6,35 @@ import { Product } from "src/models/product.model";
 import { Category } from "src/models/category.model";
 import { ProductField } from "src/models/product_fields.model";
 import { Sequelize } from "sequelize-typescript";
+import { File } from "src/models/files.model";
+import { FilesService } from "../files/files.service";
 
 @Injectable()
 export class ProductsService {
   constructor(
     private readonly sequelize: Sequelize,
+    private readonly filesService: FilesService,
     @InjectModel(Product) private productModel: typeof Product,
     @InjectModel(Category) private categoryModel: typeof Category,
     @InjectModel(ProductField) private productFieldModel: typeof ProductField,
+    @InjectModel(File) private fileModel: typeof File,
   ) {}
 
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto, files: any[]) {
     const transaction = await this.sequelize.transaction();
 
     try {
       const product = await this.productModel.create({
         name: createProductDto.name,
       }, { transaction });
+
+      const fileNames = [];
+
+      for (let index = 0; index < files.length; index++) {
+        const file = files[index];
+        const fileName = await this.filesService.createFile(file, product.id, transaction);
+        fileNames.push(fileName);
+      }
 
       if (createProductDto.categories && createProductDto.categories.length > 0) {
         const categories = await this.categoryModel.findAll({
@@ -72,6 +84,9 @@ export class ProductsService {
         {
           model: ProductField,
           attributes: ['name', 'value']
+        },
+        {
+          model: File
         }
       ],
     });

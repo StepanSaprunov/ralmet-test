@@ -10,7 +10,9 @@ import { ProductField } from "./models/product_fields.model";
 import { ProductCategory } from "./models/product-category.model";
 import { Subcategory } from "./models/subcategory.model";
 import { CategoriesModule } from './modules/categories/categories.module';
-import { ProductsModule } from './modules/products/products.module';
+import { ProductsModule } from "./modules/products/products.module";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import * as path from "path";
 
 @Module({
   controllers: [],
@@ -33,6 +35,9 @@ import { ProductsModule } from './modules/products/products.module';
         ProductCategory,
         Subcategory
       ],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: path.resolve(__dirname, "..", "static"),
     }),
     UsersModule,
     AuthModule,
