@@ -49,6 +49,15 @@ services:
     networks:
       - ralmet
     restart: unless-stopped
+  frontend:
+    container_name: frontend
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    volumes:
+      - ./frontend:/app
+    ports:
+      - 3000:3000
 networks:
   ralmet:
     driver: bridge
