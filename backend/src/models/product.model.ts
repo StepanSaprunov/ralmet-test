@@ -1,11 +1,12 @@
-import { BelongsTo, BelongsToMany, Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
+import { BelongsToMany, Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import { Category } from "./category.model";
 import { ProductCategory } from "./product-category.model";
 import { ProductField } from "./product_fields.model";
+import { File } from "./files.model";
 
 interface ProductCreationAttr {
   name: string;
-  categories?: [string];
+  categories?: number[];
 }
 
 @Table({
@@ -22,14 +23,16 @@ export class Product extends Model<Product, ProductCreationAttr> {
 
   @Column({
     type: DataType.STRING,
-    unique: true,
     allowNull: false,
   })
   name: string;
 
   @BelongsToMany(() => Category, () => ProductCategory)
-  categories: Category[]
+  categories: Category[];
 
   @HasMany(() => ProductField)
-  fields: ProductField[]
+  fields: ProductField[];
+
+  @HasMany(() => File)
+  files: File;
 }

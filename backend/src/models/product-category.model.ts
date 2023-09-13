@@ -8,14 +8,6 @@ import { Category } from "./category.model";
   updatedAt: false
 })
 export class ProductCategory extends Model<ProductCategory> {
-  @Column({
-    type: DataType.INTEGER,
-    unique: true,
-    autoIncrement: true,
-    primaryKey: true,
-  })
-  id: number;
-
   @ForeignKey(() => Product)
   @Column({
     type: DataType.INTEGER,

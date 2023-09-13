@@ -5,14 +5,6 @@ import { Product } from "./product.model";
   tableName: "product_fields",
 })
 export class ProductField extends Model<ProductField> {
-  @Column({
-    type: DataType.INTEGER,
-    unique: true,
-    autoIncrement: true,
-    primaryKey: true,
-  })
-  id: number;
-
   @ForeignKey(() => Product)
   @Column({
     type: DataType.INTEGER,
