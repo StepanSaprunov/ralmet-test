@@ -1,15 +1,15 @@
-import { BelongsTo, BelongsToMany, Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
+import { BelongsToMany, Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import { Product } from "./product.model";
 import { ProductCategory } from "./product-category.model";
 import { Subcategory } from "./subcategory.model";
 
 interface CategoryCreationAttr {
   name: string;
-  categories?: [string];
+  categories?: [number];
 }
 
 @Table({
-  tableName: "products",
+  tableName: "categories",
 })
 export class Category extends Model<Category, CategoryCreationAttr> {
   @Column({
@@ -30,6 +30,6 @@ export class Category extends Model<Category, CategoryCreationAttr> {
   @BelongsToMany(() => Product, () => ProductCategory)
   products: Product[]
 
-  @BelongsToMany(() => Category, () => Subcategory)
+  @BelongsToMany(() => Category, () => Subcategory, 'categoryId', 'subcategoryId')
   subcategories: Category[]
 }

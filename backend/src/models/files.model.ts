@@ -7,7 +7,7 @@ interface FileCreationAttr {
 }
 
 @Table({
-  tableName: "products",
+  tableName: "files",
 })
 export class File extends Model<File, FileCreationAttr> {
   @Column({
