@@ -8,6 +8,4 @@ RUN npm install
 
 COPY ./backend .
 
-COPY ./backend/dist ./dist
-
 CMD ["npm", "run", "start:dev"]
