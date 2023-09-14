@@ -1,5 +1,5 @@
 import { createEffect, createEvent, createStore, sample } from "effector";
-import { ICategory, IEditCategoryDialog, IFetchCategoriesAttr, IFetchCategoriesResponse } from "./types";
+import { ICategory, ICreateCategory, IEditCategory, IEditCategoryDialog, IFetchCategoriesAttr, IFetchCategoriesResponse } from "./types";
 import { instanceAuth } from "../../utils/axios";
 
 const $categories = createStore<ICategory[] | null>(null);
@@ -31,7 +31,7 @@ const $addCategoryDialogIsOpened = createStore<boolean>(false);
 const openAddCategoryDialog = createEvent();
 const closeAddCategoryDialog = createEvent();
 
-$addCategoryDialogIsOpened.on(openAddCategoryDialog, (_, payload) => true);
+$addCategoryDialogIsOpened.on(openAddCategoryDialog, () => true);
 $addCategoryDialogIsOpened.on(closeAddCategoryDialog, () => false);
 
 const $categoriesPage = createStore<number>(1);
@@ -60,6 +60,38 @@ const fetchCategoriesFX = createEffect(async (attr: IFetchCategoriesAttr): Promi
   return response.data;
 });
 
+const deleteCategoryFX = createEffect(async (id: number) => {
+  await instanceAuth.delete(`/categories/${id}`);
+})
+
+const createCategoryFX = createEffect(async (attr: ICreateCategory): Promise<ICategory> => {
+  const response = await instanceAuth.post("/categories", attr);
+  return response.data;
+});
+
+const editCategoryFX = createEffect(async (attr: IEditCategory): Promise<ICategory> => {
+  const response = await instanceAuth.patch(`/categories/${attr.id}`, attr);
+  return response.data;
+});
+
+$editCategoryDialog.on(editCategoryFX.done, () => {
+  return {
+    category: null,
+    isOpen: false
+  }
+});
+
+$addCategoryDialogIsOpened.on(createCategoryFX.doneData, () => false);
+
+const fetchAllCategoriesFX = createEffect(async (): Promise<IFetchCategoriesResponse> => {
+  const response = await instanceAuth.get("/categories");
+  return response.data;
+});
+
+const $allCategories = createStore<ICategory[]>([]);
+
+$allCategories.on(fetchAllCategoriesFX.doneData, (_, payload) => payload.rows);
+
 sample({
   source: [$categoriesPage, $categoriesLimit, $categoriesCount],
   target: fetchCategoriesFX,
@@ -74,7 +106,73 @@ sample({
     }
     return result;
   }
-})
+});
+
+sample({
+  clock: createCategoryFX.done,
+  source: [$categoriesPage, $categoriesLimit],
+  target: fetchCategoriesFX,
+  fn: (src) => {
+    const [page, limit] = src;
+    const result: IFetchCategoriesAttr = {};
+    if (page) {
+      result.page = page;
+    }
+    if (limit) {
+      result.limit = limit;
+    }
+    return result;
+  }
+});
+
+sample({
+  clock: deleteCategoryFX.done,
+  source: [$categoriesPage, $categoriesLimit],
+  target: fetchCategoriesFX,
+  fn: (src) => {
+    const [page, limit] = src;
+    const result: IFetchCategoriesAttr = {};
+    if (page) {
+      result.page = page;
+    }
+    if (limit) {
+      result.limit = limit;
+    }
+    return result;
+  }
+});
+
+sample({
+  clock: editCategoryFX.done,
+  source: [$categoriesPage, $categoriesLimit],
+  target: fetchCategoriesFX,
+  fn: (src) => {
+    const [page, limit] = src;
+    const result: IFetchCategoriesAttr = {};
+    if (page) {
+      result.page = page;
+    }
+    if (limit) {
+      result.limit = limit;
+    }
+    return result;
+  }
+});
+
+sample({
+  clock: deleteCategoryFX.done,
+  target: fetchAllCategoriesFX
+});
+
+sample({
+  clock: createCategoryFX.done,
+  target: fetchAllCategoriesFX
+});
+
+sample({
+  clock: editCategoryFX.done,
+  target: fetchAllCategoriesFX
+});
 
 $categories.on(fetchCategoriesFX.doneData, (_, payload) => payload.rows);
 $categoriesCount.on(fetchCategoriesFX.doneData, (_, payload) => payload.count);
@@ -93,4 +191,9 @@ export {
   openAddCategoryDialog,
   closeAddCategoryDialog,
   $addCategoryDialogIsOpened,
+  fetchAllCategoriesFX,
+  $allCategories,
+  createCategoryFX,
+  deleteCategoryFX,
+  editCategoryFX,
 }

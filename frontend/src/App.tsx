@@ -9,6 +9,10 @@ import NavBar from "./components/NavBar/NavBar";
 import CategoriesPage from "./pages/CategoriesPage/CategoriesPage";
 import ProductsPage from "./pages/ProductsPage/ProductsPage";
 import styles from "./App.module.scss";
+import AddCategoryDialog from "./components/AddCategoryDialog/AddCategoryDialog";
+import { useStore } from "effector-react";
+import { $addCategoryDialogIsOpened, $editCategoryDialog } from "./stores/categories/categories";
+import EditCategoryDialog from "./components/EditCategoryDialog/EditCategoryDialog";
 
 function App() {
 
@@ -16,6 +20,9 @@ function App() {
   if (localStorage.getItem("user")) {
     setUser(JSON.parse(localStorage.getItem("user") as string))
   };
+
+  const addCategoryDialogIsOpened = useStore($addCategoryDialogIsOpened);
+  const editCategoryDialog = useStore($editCategoryDialog);
 
   return (
     <>
@@ -33,7 +40,8 @@ function App() {
           </Route>
         </Routes>
       </div>
-
+      <AddCategoryDialog open={addCategoryDialogIsOpened} />
+      <EditCategoryDialog open={editCategoryDialog.isOpen} category={editCategoryDialog.category} />
     </>
   )
 }

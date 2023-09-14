@@ -19,3 +19,14 @@ export interface IFetchCategoriesResponse {
   rows: ICategory[];
   count: number;
 }
+
+export interface ICreateCategory {
+  name: string;
+  subcategories: number[];
+}
+
+export interface IEditCategory {
+  id: number;
+  name: string;
+  subcategories: number[];
+}

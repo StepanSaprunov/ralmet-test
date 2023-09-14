@@ -4,6 +4,7 @@ import React from "react";
 import { ICategory } from "../../../stores/categories/types";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { deleteCategoryFX, openEditCategoryDialog } from "../../../stores/categories/categories";
 
 interface IProps {
   category: ICategory
@@ -11,6 +12,14 @@ interface IProps {
 
 const CategoryListElement = (props: IProps) => {
   const { category } = props;
+
+  const handleDeleteClick = async () => {
+    await deleteCategoryFX(category.id);
+  }
+
+  const handleEditClick = () => {
+    openEditCategoryDialog(category);
+  }
 
   return (
     <Stack direction={"row"} width={"100%"} divider={<Divider orientation="vertical" flexItem />}>
@@ -21,12 +30,12 @@ const CategoryListElement = (props: IProps) => {
         <Typography variant="subtitle1" marginLeft={"20px"}>{category.name} </Typography>
       </Box>
       <Box flexGrow={1}>
-        {category.subcategories?.map(subcat => <Typography key={subcat.id} variant="subtitle1" marginLeft={"5px"}>{` ${subcat.name} (${subcat.id});`}</Typography>)}
+        {category.subcategories?.map(subcat => <Typography key={subcat.id} variant="subtitle1" marginLeft={"5px"}>{subcat.name}</Typography>)}
       </Box>
-      <IconButton>
+      <IconButton onClick={handleEditClick}>
         <EditIcon />
       </IconButton>
-      <IconButton>
+      <IconButton onClick={handleDeleteClick}>
         <DeleteIcon />
       </IconButton>
     </Stack>
