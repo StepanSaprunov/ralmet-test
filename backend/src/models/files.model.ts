@@ -40,7 +40,6 @@ export class File extends Model<File, FileCreationAttr> {
   @ForeignKey(() => Product)
   @Column({
     type: DataType.INTEGER,
-    allowNull: false,
   })
   productId: number;
 

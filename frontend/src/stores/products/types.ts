@@ -1,6 +1,7 @@
 import { ICategory } from "../categories/types";
 
 export interface IField {
+  id: number;
   name: string;
   value: string;
 }
@@ -26,4 +27,11 @@ export interface IFetchProductsAttr {
 export interface IFetchProductsResponse {
   rows: IProduct[];
   count: number;
+}
+
+export interface ICreateProduct {
+  name: string;
+  categories: number[];
+  fields: { name: string, value: string }[];
+  files: any[];
 }

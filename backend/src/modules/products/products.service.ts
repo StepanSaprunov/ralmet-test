@@ -32,7 +32,7 @@ export class ProductsService {
 
       const fileNames = [];
 
-      for (let index = 0; index < files.length; index++) {
+      for (let index = 0; index < files?.length; index++) {
         const file = files[index];
         const fileName = await this.filesService.createFile(file, product.id, transaction);
         fileNames.push(fileName);

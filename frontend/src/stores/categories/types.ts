@@ -30,3 +30,8 @@ export interface IEditCategory {
   name: string;
   subcategories: number[];
 }
+
+export interface ICategoriesAutocompleteValue {
+  id: number;
+  label: string;
+}

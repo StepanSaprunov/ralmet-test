@@ -13,6 +13,8 @@ import AddCategoryDialog from "./components/AddCategoryDialog/AddCategoryDialog"
 import { useStore } from "effector-react";
 import { $addCategoryDialogIsOpened, $editCategoryDialog } from "./stores/categories/categories";
 import EditCategoryDialog from "./components/EditCategoryDialog/EditCategoryDialog";
+import AddProductDialog from "./components/AddProductDialog/AddProductDialog";
+import { $addProductDialogIsOpened } from "./stores/products/products";
 
 function App() {
 
@@ -23,6 +25,7 @@ function App() {
 
   const addCategoryDialogIsOpened = useStore($addCategoryDialogIsOpened);
   const editCategoryDialog = useStore($editCategoryDialog);
+  const addProductDialogIsOpened = useStore($addProductDialogIsOpened);
 
   return (
     <>
@@ -42,6 +45,7 @@ function App() {
       </div>
       <AddCategoryDialog open={addCategoryDialogIsOpened} />
       <EditCategoryDialog open={editCategoryDialog.isOpen} category={editCategoryDialog.category} />
+      <AddProductDialog open={addProductDialogIsOpened} />
     </>
   )
 }

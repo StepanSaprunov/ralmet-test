@@ -5,6 +5,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { deleteCategoryFX, openEditCategoryDialog } from "../../../stores/categories/categories";
 import { IProduct } from "../../../stores/products/types";
+import { deleteProductFX } from "../../../stores/products/products";
 
 interface IProps {
   product: IProduct
@@ -14,7 +15,7 @@ const ProductListElement = (props: IProps) => {
   const { product } = props;
 
   const handleDeleteClick = async () => {
-
+    await deleteProductFX(product.id);
   }
 
   const handleEditClick = () => {

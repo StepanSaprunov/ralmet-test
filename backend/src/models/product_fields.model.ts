@@ -6,6 +6,15 @@ import { ApiProperty } from "@nestjs/swagger";
   tableName: "product_fields",
 })
 export class ProductField extends Model<ProductField> {
+  @ApiProperty({ example: 1, type: Number, description: "Field id" })
+  @Column({
+    type: DataType.INTEGER,
+    unique: true,
+    autoIncrement: true,
+    primaryKey: true,
+  })
+  id: number;
+
   @ApiProperty({ example: 1, description: "Product's id", type: Number })
   @ForeignKey(() => Product)
   @Column({
