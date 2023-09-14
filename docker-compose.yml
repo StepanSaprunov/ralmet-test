@@ -51,9 +51,13 @@ services:
     restart: unless-stopped
   frontend:
     container_name: frontend
+    depends_on:
+      - backend
     build:
       context: .
       dockerfile: ./frontend/Dockerfile
+    env_file:
+      - ./docker/frontend/.dev.env
     volumes:
       - ./frontend:/app
     ports:
