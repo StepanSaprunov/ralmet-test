@@ -1,0 +1,14 @@
+.navBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+}
+
+.navBarItem {
+  margin-right: 20px;
+
+  &:first-child {
+    margin-left: 20px;
+  }
+}

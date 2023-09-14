@@ -2,7 +2,7 @@ import React from "react";
 import Button from '@mui/material/Button';
 import { Box, Container, CssBaseline, TextField, Typography } from "@mui/material";
 import styles from "./LoginForm.module.scss";
-import { Link, redirect, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginFX } from "../../stores/auth/auth";
 
 const LoginForm = () => {
