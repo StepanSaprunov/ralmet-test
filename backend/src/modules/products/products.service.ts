@@ -69,7 +69,7 @@ export class ProductsService {
   async findAll(query: IQueryPagination) {
     const { page, limit } = query;
     const offset = calcOffset(+page, +limit) || undefined;
-    const products = await this.productModel.findAll({
+    const products = await this.productModel.findAndCountAll({
       offset,
       limit,
       include: [

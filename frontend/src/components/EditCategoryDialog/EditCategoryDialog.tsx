@@ -19,21 +19,7 @@ const EditCategoryDialog = (props: IProps) => {
   const { open, category } = props;
 
   const [nameIsValid, setNameIsValid] = useState(false);
-
-  const subcategoriesOption = useStore($allCategories)
-    .map(el => { return { id: el.id, label: el.name } })
-    .filter(el => el.id !== category?.id);
-
-  useEffect(() => {
-    fetchAllCategoriesFX();
-  }, []);
-
   const [name, setName] = useState(category?.name ?? "");
-
-  useEffect(() => {
-    setNameIsValid(name !== "" && !subcategoriesOption.some(el => el.label === name));
-  }, [name]);
-
   const [subcategories, setSubcategories] = useState<IAutocompleteValue[]>(
     category?.subcategories?.map(el => {
       return {
@@ -43,8 +29,19 @@ const EditCategoryDialog = (props: IProps) => {
     }
     ) ?? []
   );
-
   const [sCategoryValue, setSCategoryValue] = useState<IAutocompleteValue | null>(null);
+
+  const subcategoriesOption = useStore($allCategories)
+    .map(el => { return { id: el.id, label: el.name } })
+    .filter(el => el.id !== category?.id);
+
+  useEffect(() => {
+    fetchAllCategoriesFX();
+  }, []);
+
+  useEffect(() => {
+    setNameIsValid(name !== "" && !subcategoriesOption.some(el => el.label === name));
+  }, [name]);
 
   useEffect(() => {
     if (sCategoryValue) {

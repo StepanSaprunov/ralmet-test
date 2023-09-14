@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import CategoryListHeader from "./CategoryListHeader/CategoryListHeader";
-import CategoryListBody from "./CategoryListBody/CategoryListBody";
+import { $productsCount, $productsLimit, $productsPage, fetchProductsFX, setProductsLimit, setProductsPage } from "../../stores/products/products";
 import { MenuItem, Pagination, Select, SelectChangeEvent, Stack } from "@mui/material";
-import { $categoriesCount, $categoriesLimit, $categoriesPage, fetchCategoriesFX, setCategoriesLimit, setCategoriesPage } from "../../stores/categories/categories";
 import { useStore } from "effector-react";
+import ProductListHeader from "./ProductListHeader/ProductListHeader";
+import ProductListBody from "./ProductListBody/ProductListBody";
 
-const CategoryList = () => {
-  const page = useStore($categoriesPage);
-  const limit = useStore($categoriesLimit);
-  const count = useStore($categoriesCount);
+const ProductList = () => {
+  const page = useStore($productsPage);
+  const limit = useStore($productsLimit);
+  const count = useStore($productsCount);
 
   const maxPage = useMemo(() => {
     if (!limit) return 1;
@@ -16,26 +16,26 @@ const CategoryList = () => {
   }, [limit, count]);
 
   useEffect(() => {
-    fetchCategoriesFX({
+    fetchProductsFX({
       page,
       limit: limit ? limit : undefined
     })
   }, [])
 
   const handlePaginationChange = useCallback((event: React.ChangeEvent<unknown>, value: number) => {
-    setCategoriesPage(value);
+    setProductsPage(value);
   }, []);
 
   const handleLimitSelectChange = (event: SelectChangeEvent) => {
     const value = event.target.value as unknown as number;
-    setCategoriesLimit(value ? value : null);
+    setProductsLimit(value ? value : null);
   };
 
 
   return (
     <>
-      <CategoryListHeader />
-      <CategoryListBody />
+      <ProductListHeader />
+      <ProductListBody />
       <Stack direction={"row"} alignItems={"center"}>
         <Pagination count={maxPage} page={page} onChange={handlePaginationChange} />
         <Select
@@ -53,4 +53,4 @@ const CategoryList = () => {
   );
 }
 
-export default React.memo(CategoryList);
+export default React.memo(ProductList);

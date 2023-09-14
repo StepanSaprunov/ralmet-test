@@ -4,6 +4,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 interface FileCreationAttr {
   name: string;
+  originalName: string;
   productId: number;
 }
 

@@ -20,6 +20,7 @@ export class FilesService {
       fs.writeFileSync(path.join(filePath, fileName), file.buffer)
       const fileDb = await this.fileModel.create({
         name: fileName,
+        originalName: file.originalname,
         productId
       }, { transaction });
       return fileDb;
