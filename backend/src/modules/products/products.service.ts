@@ -89,7 +89,7 @@ export class ProductsService {
         },
         {
           model: ProductField,
-          attributes: ['name', 'value']
+          attributes: ['name', 'value', 'id']
         },
         {
           model: File
@@ -118,7 +118,7 @@ export class ProductsService {
         },
         {
           model: ProductField,
-          attributes: ['name', 'value']
+          attributes: ['name', 'value', 'id']
         }
       ],
     });
@@ -208,7 +208,7 @@ export class ProductsService {
           },
           {
             model: ProductField,
-            attributes: ['name', 'value']
+            attributes: ['name', 'value', 'id']
           }
         ],
       });
