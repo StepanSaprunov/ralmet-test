@@ -1,35 +1,32 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { $allCategories, closeEditCategoryDialog, editCategoryFX, fetchAllCategoriesFX } from "../../stores/categories/categories";
-import { Autocomplete, Button, Dialog, DialogTitle, IconButton, Stack, TextField } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
-import { useStore } from "effector-react";
-import { ICategory } from "../../stores/categories/types";
 
-interface IProps {
-  open: boolean;
-  category: ICategory | null;
-}
+import React, { useCallback, useEffect, useState } from "react";
+import { $allCategories, $editCategoryDialog, closeEditCategoryDialog, editCategoryFX, fetchAllCategoriesFX } from "../../stores/categories/categories";
+import { Button, Dialog, DialogTitle, Stack, TextField } from "@mui/material";
+import { useStore } from "effector-react";
+import CategoryAutocomplete from "../CategoryAutocomplete/CategoryAutocomplete";
 
 interface IAutocompleteValue {
   id: number;
   label: string;
 }
 
-const EditCategoryDialog = (props: IProps) => {
-  const { open, category } = props;
+const EditCategoryDialog = () => {
+  const { category, isOpen: open } = useStore($editCategoryDialog);
+
+  useEffect(() => {
+    if (category) {
+      setName(category.name);
+      setSubcategories(category.subcategories?.map(el => {
+        return {
+          id: el.id,
+          label: el.name
+        }
+      }
+      ) ?? []);
+    }
+  }, [category])
 
   const [nameIsValid, setNameIsValid] = useState(false);
-  const [name, setName] = useState(category?.name ?? "");
-  const [subcategories, setSubcategories] = useState<IAutocompleteValue[]>(
-    category?.subcategories?.map(el => {
-      return {
-        id: el.id,
-        label: el.name
-      }
-    }
-    ) ?? []
-  );
-  const [sCategoryValue, setSCategoryValue] = useState<IAutocompleteValue | null>(null);
 
   const subcategoriesOption = useStore($allCategories)
     .map(el => { return { id: el.id, label: el.name } })
@@ -39,9 +36,15 @@ const EditCategoryDialog = (props: IProps) => {
     fetchAllCategoriesFX();
   }, []);
 
+  const [name, setName] = useState("");
+
   useEffect(() => {
     setNameIsValid(name !== "" && !subcategoriesOption.some(el => el.label === name));
   }, [name]);
+
+  const [subcategories, setSubcategories] = useState<IAutocompleteValue[]>([]);
+
+  const [sCategoryValue, setSCategoryValue] = useState<IAutocompleteValue | null>(null);
 
   useEffect(() => {
     if (sCategoryValue) {
@@ -71,7 +74,7 @@ const EditCategoryDialog = (props: IProps) => {
 
   return (
     <Dialog onClose={handleClose} open={open} >
-      <DialogTitle>Add category</DialogTitle>
+      <DialogTitle>Edit category</DialogTitle>
       <Stack spacing={2} direction={"column"} padding={"20px"}>
         <TextField
           required
@@ -80,35 +83,10 @@ const EditCategoryDialog = (props: IProps) => {
           value={name}
           onChange={(e) => { setName(e.target.value) }}
         />
-        {subcategories.map(el =>
-          <Stack direction={"row"} key={el.id}>
-            <TextField
-              label="Subcategory"
-              value={el.label}
-              disabled
-            />
-            <IconButton onClick={() => {
-              setSubcategories(prev => prev.filter(prevEl => prevEl.id !== el.id))
-            }}>
-              <DeleteIcon />
-            </IconButton>
-          </Stack>
-        )}
-        <Stack direction={"row"}>
-          <Autocomplete
-            disablePortal
-            id="combo-box-demo"
-            options={subcategoriesOption}
-            sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Subcategory" />
-            }
-            value={sCategoryValue}
-            onInputChange={(_, newInputValue) => {
-              setSCategoryValue(subcategoriesOption.find((el) => el.label === newInputValue) ?? null);
-            }}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
-          />
-        </Stack>
+        <CategoryAutocomplete
+          categories={subcategories}
+          setCategories={setSubcategories}
+        />
         <Stack direction={"row"} justifyContent={"center"} spacing={2}>
           <Button variant="outlined" onClick={handleClose}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveButtonClick} disabled={!nameIsValid}>Save</Button>
@@ -119,4 +97,4 @@ const EditCategoryDialog = (props: IProps) => {
   );
 }
 
-export default React.memo(EditCategoryDialog);
+export default EditCategoryDialog;

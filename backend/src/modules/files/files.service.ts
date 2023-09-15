@@ -30,4 +30,23 @@ export class FilesService {
     }
   }
 
+  async removeFileWT(fileName: string, transaction: Transaction) {
+    try {
+      const filePath = path.resolve(__dirname, '..', '..', '..', 'static');
+      if (!fs.existsSync(filePath)) {
+        fs.mkdirSync(filePath, { recursive: true })
+      }
+      fs.unlinkSync(path.join(filePath, fileName));
+      await this.fileModel.destroy({
+        where: {
+          name: fileName
+        },
+        transaction
+      });
+    } catch (e) {
+      console.log(e);
+      throw new HttpException('Error while removing file', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
 }

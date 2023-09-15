@@ -1,6 +1,7 @@
 import { createEffect, createEvent, createStore, sample } from "effector";
-import { ICreateProduct, IFetchProductsAttr, IFetchProductsResponse, IProduct } from "./types";
+import { ICreateProduct, IEditProduct, IEditProductDialog, IFetchProductsAttr, IFetchProductsResponse, IProduct } from "./types";
 import { instanceAuth } from "../../utils/axios";
+import { jsonToFormData } from "../../utils/json-to-form-data";
 
 const $products = createStore<IProduct[] | null>(null);
 const $productsCount = createStore<number>(0);
@@ -59,30 +60,6 @@ $addProductDialogIsOpened.on(openAddProductDialog, () => true);
 $addProductDialogIsOpened.on(closeAddProductDialog, () => false);
 
 const createProductFX = createEffect(async (attr: ICreateProduct): Promise<IProduct> => {
-  function buildFormData(formData: any, data: any, parentKey?: any) {
-    if (data && typeof data === 'object' && !(data instanceof Date) && !(data instanceof File) && !(data instanceof Blob)) {
-      if (!(Array.isArray(data))) {
-        Object.keys(data).forEach(key => {
-          buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
-        });
-      }
-      else {
-        data.forEach((el, index) => buildFormData(formData, el, parentKey === 'files' ? parentKey : `${parentKey}[${index}]`));
-      }
-    } else {
-      const value = data == null ? '' : data;
-
-      formData.append(parentKey, value);
-    }
-  }
-
-  function jsonToFormData(data: any) {
-    const formData = new FormData();
-
-    buildFormData(formData, data);
-
-    return formData;
-  }
   const response = await instanceAuth.post("/products", jsonToFormData(attr), {
     headers: {
       "Content-Type": "multipart/form-data"
@@ -131,6 +108,60 @@ sample({
   }
 });
 
+const $editProductDialog = createStore<IEditProductDialog>({
+  product: null,
+  isOpen: false,
+});
+
+const openEditProductDialog = createEvent<IProduct>();
+const closeEditProductDialog = createEvent();
+
+$editProductDialog.on(openEditProductDialog, (_, payload) => {
+  return {
+    isOpen: true,
+    product: payload
+  }
+});
+$editProductDialog.on(closeEditProductDialog, () => {
+  return {
+    isOpen: false,
+    product: null
+  }
+});
+
+const editProductFX = createEffect(async (attr: IEditProduct): Promise<IProduct> => {
+  const response = await instanceAuth.patch(`/products/${attr.id}`, jsonToFormData(attr), {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  });
+  return response.data;
+});
+
+$editProductDialog.on(editProductFX.done, () => {
+  return {
+    product: null,
+    isOpen: false
+  }
+});
+
+sample({
+  clock: editProductFX.done,
+  source: [$productsPage, $productsLimit],
+  target: fetchProductsFX,
+  fn: (src) => {
+    const [page, limit] = src;
+    const result: IFetchProductsAttr = {};
+    if (page) {
+      result.page = page;
+    }
+    if (limit) {
+      result.limit = limit;
+    }
+    return result;
+  }
+});
+
 export {
   $productsPage,
   $productsLimit,
@@ -143,5 +174,9 @@ export {
   openAddProductDialog,
   closeAddProductDialog,
   createProductFX,
-  deleteProductFX
+  deleteProductFX,
+  $editProductDialog,
+  openEditProductDialog,
+  closeEditProductDialog,
+  editProductFX
 }

@@ -36,5 +36,5 @@ export class Product extends Model<Product, CreateProductDto> {
 
   @ApiProperty({ type: [File], description: "Product's files" })
   @HasMany(() => File)
-  files: File;
+  files: File[];
 }

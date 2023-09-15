@@ -1,20 +1,16 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { $allCategories, closeAddCategoryDialog, createCategoryFX, fetchAllCategoriesFX } from "../../stores/categories/categories";
+import { $addCategoryDialogIsOpened, $allCategories, closeAddCategoryDialog, createCategoryFX, fetchAllCategoriesFX } from "../../stores/categories/categories";
 import { Button, Dialog, DialogTitle, Stack, TextField } from "@mui/material";
 import { useStore } from "effector-react";
 import CategoryAutocomplete from "../CategoryAutocomplete/CategoryAutocomplete";
-
-interface IProps {
-  open: boolean;
-}
 
 interface IAutocompleteValue {
   id: number;
   label: string;
 }
 
-const AddCategoryDialog = (props: IProps) => {
-  const { open } = props;
+const AddCategoryDialog = () => {
+  const open = useStore($addCategoryDialogIsOpened);
 
   const [nameIsValid, setNameIsValid] = useState(false);
 
@@ -51,7 +47,6 @@ const AddCategoryDialog = (props: IProps) => {
       <Stack spacing={2} direction={"column"} padding={"20px"}>
         <TextField
           required
-          id="name-required"
           label="Name"
           value={name}
           onChange={(e) => { setName(e.target.value) }}
@@ -70,4 +65,4 @@ const AddCategoryDialog = (props: IProps) => {
   );
 }
 
-export default React.memo(AddCategoryDialog);
+export default AddCategoryDialog;

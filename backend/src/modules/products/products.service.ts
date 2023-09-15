@@ -125,7 +125,7 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto) {
+  async update(id: number, updateProductDto: UpdateProductDto, files: any[]) {
     const transaction = await this.productModel.sequelize.transaction();
 
     try {
@@ -169,6 +169,24 @@ export class ProductsService {
         await this.productFieldModel.bulkCreate(productFields, { transaction });
       }
 
+      if (updateProductDto.filesToRemove) {
+        for (let index = 0; index < updateProductDto.filesToRemove.length; index++) {
+          const element = updateProductDto.filesToRemove[index];
+          await this.filesService.removeFileWT(element.name, transaction);
+        }
+      }
+
+      if (files) {
+        const fileNames = [];
+
+        for (let index = 0; index < files?.length; index++) {
+          const file = files[index];
+          const fileName = await this.filesService.createFile(file, product.id, transaction);
+          fileNames.push(fileName);
+        }
+      }
+
+
       await product.save({ transaction });
 
       await transaction.commit();
@@ -203,12 +221,31 @@ export class ProductsService {
   }
 
   async remove(id: number) {
-    const product = await this.productModel.findByPk(id);
+    const transaction = await this.productModel.sequelize.transaction();
 
-    if (!product) {
+    try {
+      const product = await this.productModel.findByPk(id, {
+        include: File
+      });
+
+      if (!product) {
+        throw new HttpException({ message: "Error while removing product" }, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+
+      for (let index = 0; index < product.files.length; index++) {
+        const element = product.files[index];
+        await this.filesService.removeFileWT(element.name, transaction);
+      }
+
+      await product.destroy({
+        transaction
+      });
+
+      await transaction.commit();
+    } catch (e) {
+      console.log(e);
+      await transaction.rollback();
       throw new HttpException({ message: "Error while removing product" }, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    await product.destroy();
   }
 }

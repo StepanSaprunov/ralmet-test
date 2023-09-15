@@ -10,11 +10,9 @@ import CategoriesPage from "./pages/CategoriesPage/CategoriesPage";
 import ProductsPage from "./pages/ProductsPage/ProductsPage";
 import styles from "./App.module.scss";
 import AddCategoryDialog from "./components/AddCategoryDialog/AddCategoryDialog";
-import { useStore } from "effector-react";
-import { $addCategoryDialogIsOpened, $editCategoryDialog } from "./stores/categories/categories";
 import EditCategoryDialog from "./components/EditCategoryDialog/EditCategoryDialog";
 import AddProductDialog from "./components/AddProductDialog/AddProductDialog";
-import { $addProductDialogIsOpened } from "./stores/products/products";
+import EditProductDialog from "./components/EditProductDialog/EditProductDialog";
 
 function App() {
 
@@ -22,10 +20,6 @@ function App() {
   if (localStorage.getItem("user")) {
     setUser(JSON.parse(localStorage.getItem("user") as string))
   };
-
-  const addCategoryDialogIsOpened = useStore($addCategoryDialogIsOpened);
-  const editCategoryDialog = useStore($editCategoryDialog);
-  const addProductDialogIsOpened = useStore($addProductDialogIsOpened);
 
   return (
     <>
@@ -43,9 +37,10 @@ function App() {
           </Route>
         </Routes>
       </div>
-      <AddCategoryDialog open={addCategoryDialogIsOpened} />
-      <EditCategoryDialog open={editCategoryDialog.isOpen} category={editCategoryDialog.category} />
-      <AddProductDialog open={addProductDialogIsOpened} />
+      <AddCategoryDialog />
+      <EditCategoryDialog />
+      <AddProductDialog />
+      <EditProductDialog />
     </>
   )
 }

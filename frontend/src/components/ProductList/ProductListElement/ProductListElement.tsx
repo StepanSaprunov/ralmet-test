@@ -3,9 +3,8 @@ import { Box } from "@mui/system";
 import React from "react";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { deleteCategoryFX, openEditCategoryDialog } from "../../../stores/categories/categories";
 import { IProduct } from "../../../stores/products/types";
-import { deleteProductFX } from "../../../stores/products/products";
+import { deleteProductFX, openEditProductDialog } from "../../../stores/products/products";
 
 interface IProps {
   product: IProduct
@@ -19,7 +18,7 @@ const ProductListElement = (props: IProps) => {
   }
 
   const handleEditClick = () => {
-
+    openEditProductDialog(product);
   }
 
   return (

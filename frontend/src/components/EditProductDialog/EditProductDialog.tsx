@@ -1,21 +1,42 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, Dialog, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import { Button, Dialog, DialogTitle, IconButton, Stack, TextField, Typography } from "@mui/material";
 import { ICategoriesAutocompleteValue } from "../../stores/categories/types";
 import CategoryAutocomplete from "../CategoryAutocomplete/CategoryAutocomplete";
-import { $addProductDialogIsOpened, closeAddProductDialog, createProductFX } from "../../stores/products/products";
-import { IField } from "../../stores/products/types";
+import { $editProductDialog, closeEditProductDialog, editProductFX } from "../../stores/products/products";
+import { IField, IFile } from "../../stores/products/types";
 import Fields from "../Fields/Fields";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { fetchAllCategoriesFX } from "../../stores/categories/categories";
 import { useStore } from "effector-react";
 
-const AddProductDialog = () => {
-  const open = useStore($addProductDialogIsOpened);
+
+const EditProductDialog = () => {
+  const { isOpen: open, product } = useStore($editProductDialog);
+
+  useEffect(() => {
+    if (product) {
+      setName(product.name);
+      setCategories(product.categories.map(
+        category => ({ id: category.id, label: category.name })
+      ));
+      setField(product.fields);
+      setExistedFiles(product.files);
+      setFilesToRemove([]);
+    }
+  }, [product])
 
   const [name, setName] = useState("");
   const [categories, setCategories] = useState<ICategoriesAutocompleteValue[]>([]);
   const [fields, setField] = useState<IField[]>([]);
+  const [existedFiles, setExistedFiles] = useState<IFile[]>([]);
   const [files, setFiles] = useState<FileList | null>();
   const [fileNames, setFileNames] = useState<string[]>([]);
+  const [filesToRemove, setFilesToRemove] = useState<IFile[]>([])
+
+  useEffect(() => {
+    fetchAllCategoriesFX();
+  }, []);
 
   useEffect(() => {
     const fNames = [];
@@ -26,6 +47,8 @@ const AddProductDialog = () => {
     }
     setFileNames(fNames);
   }, [files])
+
+
 
   const onFieldAdd = () => {
     setField(prev => [...prev, {
@@ -49,7 +72,7 @@ const AddProductDialog = () => {
   };
 
   const handleClose = useCallback(() => {
-    closeAddProductDialog()
+    closeEditProductDialog()
   }, []);
 
   const handleAddButtonClick = async () => {
@@ -60,22 +83,23 @@ const AddProductDialog = () => {
       }
     }
 
-    await createProductFX({
+    await editProductFX({
       name,
       categories: categories.map(cat => cat.id),
       fields: fields.map(field => ({ name: field.name, value: field.value })),
       files: f,
+      id: product!.id,
+      filesToRemove
     });
   };
 
   return (
     <Dialog onClose={handleClose} open={open} maxWidth={"lg"}>
-      <DialogTitle>Add product</DialogTitle>
+      <DialogTitle>Edit product</DialogTitle>
       <Stack spacing={2} direction={"row"} padding={"20px"}>
         <Stack spacing={2} direction={"column"}>
           <TextField
             required
-            id="name-required"
             label="Name"
             value={name}
             onChange={(e) => { setName(e.target.value) }}
@@ -95,6 +119,17 @@ const AddProductDialog = () => {
           />
         </Stack>
         <Stack spacing={2} direction={"column"}>
+          {existedFiles.map(eFile =>
+            <Stack direction={"row"} spacing={1} key={eFile.name} alignItems={"center"}>
+              <Typography variant="subtitle1">{eFile.originalName}</Typography>
+              <IconButton onClick={() => {
+                setExistedFiles(prev => prev.filter(prevEl => prevEl.name !== eFile.name))
+                setFilesToRemove(prev => [...prev, eFile]);
+              }}>
+                <DeleteIcon />
+              </IconButton>
+            </Stack>
+          )}
           <Button
             component="label"
             variant="outlined"
@@ -111,15 +146,15 @@ const AddProductDialog = () => {
               }}
             />
           </Button>
-          {fileNames.map(fName => <Typography variant="subtitle1">{fName}</Typography>)}
+          {fileNames.map((fName, index) => <Typography variant="subtitle1" key={index}>{fName}</Typography>)}
         </Stack>
       </Stack>
       <Stack direction={"row"} justifyContent={"center"} spacing={2} padding={"20px"}>
         <Button variant="outlined" onClick={handleClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleAddButtonClick}>Add</Button>
+        <Button variant="contained" onClick={handleAddButtonClick}>Save</Button>
       </Stack>
-    </Dialog>
+    </Dialog >
   );
 }
 
-export default React.memo(AddProductDialog);
+export default EditProductDialog;
