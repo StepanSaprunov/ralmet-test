@@ -28,6 +28,7 @@ services:
       - PG_DATA=/var/lib/postgresql/data
     volumes:
       - ./docker/postgres/dump:/var/lib/postgresql/data
+      - ./docker/postgres/init/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
     ports:
       - 5432:5432
     restart: unless-stopped
