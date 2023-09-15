@@ -17,9 +17,6 @@ const ProductsPage = () => {
         <IconButton onClick={handleAddButtonClick}>
           <AddIcon />
         </IconButton>
-        <IconButton>
-          <SearchIcon />
-        </IconButton>
       </Stack>
       <ProductList />
     </Stack>

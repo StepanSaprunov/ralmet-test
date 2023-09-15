@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { IconButton, Stack, Typography } from "@mui/material";
 import CategoryList from "../../components/CategoryList/CategoryList";
-import { openAddCategoryDialog } from "../../stores/categories/categories";
+import { openAddCategoryDialog, openSearchCategoryDialog } from "../../stores/categories/categories";
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -16,9 +16,6 @@ const CategoriesPage = () => {
       <Stack direction={"row"}>
         <IconButton onClick={handleAddButtonClick}>
           <AddIcon />
-        </IconButton>
-        <IconButton>
-          <SearchIcon />
         </IconButton>
       </Stack>
       <CategoryList />
