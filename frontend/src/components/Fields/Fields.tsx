@@ -23,6 +23,7 @@ const Fields = (props: IProps) => {
           field={field}
           onFieldChange={onFieldChange}
           onFieldDelete={onFieldDelete}
+          key={field.id}
         ></Field>)}
       <IconButton onClick={onFieldAdd} size="small">
         <AddIcon />

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button, Dialog, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 import { ICategoriesAutocompleteValue } from "../../stores/categories/types";
 import CategoryAutocomplete from "../CategoryAutocomplete/CategoryAutocomplete";
@@ -18,6 +18,17 @@ const AddProductDialog = (props: IProps) => {
   const [categories, setCategories] = useState<ICategoriesAutocompleteValue[]>([]);
   const [fields, setField] = useState<IField[]>([]);
   const [files, setFiles] = useState<FileList | null>();
+  const [filesArray, setFilesArray] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fNames = [];
+    if (files) {
+      for (const file of files) {
+        fNames.push(file.name);
+      }
+    }
+    setFilesArray(fNames);
+  }, [files])
 
   const onFieldAdd = () => {
     setField(prev => [...prev, {
@@ -96,12 +107,14 @@ const AddProductDialog = (props: IProps) => {
             Upload files
             <input
               type="file"
+              multiple
               hidden
               onChange={(e) => {
                 setFiles(e.target.files);
               }}
             />
           </Button>
+          {filesArray.map(fName => <Typography variant="subtitle1">{fName}</Typography>)}
         </Stack>
       </Stack>
       <Stack direction={"row"} justifyContent={"center"} spacing={2} padding={"20px"}>
